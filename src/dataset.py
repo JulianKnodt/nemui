@@ -11,11 +11,12 @@ class MIDIDataset(Dataset):
     self.midi_files = [
       os.path.join(dir, f) for f in os.listdir(dir)
       if f.lower().endswith(".mid") or f.lower().endswith(".midi")
-    ]
+    ][:]#this limit should be a parameter?
     self.midi_notes = [
-      preproc_midi(pretty_midi.PrettyMIDI(midi))[:1000]
+      preproc_midi(pretty_midi.PrettyMIDI(midi))[1000:2000]
       for midi in self.midi_files
     ]
+    self.midi_notes = [mn for mn in self.midi_notes if mn.shape[0] > num_samples]
     self.num_samples = num_samples
 
   def __len__(self): return len(self.midi_notes)
@@ -58,4 +59,12 @@ def preproc_midi(midi_data):
 
     add = torch.stack(pitches, dim=0)
     curr = add if curr is None else torch.cat([curr, add], dim=0)
-  return F.one_hot(curr, num_classes=129)[..., :-1].sum(dim=0).clamp(min=0, max=1)
+  out = F.one_hot(curr, num_classes=129)[..., :-1].sum(dim=0).clamp(min=0, max=1)
+  # compress empty space (maybe not the best idea)
+  #i = 0
+  #while i < out.shape[0]:
+  #  if (out[i:i+8] == 0).all():
+  #    out = torch.cat([out[:i], out[i+8:]],dim=0)
+  #    continue
+  #  i += 1
+  return out
