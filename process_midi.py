@@ -22,10 +22,10 @@ def arguments():
   a.add_argument("--dir", default="data/maestro-v3.0.0/2011")
   # TODO maybe make num samples stochastic?
   a.add_argument("--num-samples", type=int, default=500)
-  a.add_argument("--epochs", type=int, default=1000)
+  a.add_argument("--epochs", type=int, default=5000)
 
   a.add_argument("--out-samples", nargs="+", default=[100, 250, 500])
-  a.add_argument("--song-latent", type=int, default=128)
+  a.add_argument("--song-latent", type=int, default=32)
   a.add_argument("--total-secs", type=int, default=60)
 
   return a.parse_args()
@@ -56,7 +56,7 @@ def main():
 
   params = chain(model.parameters())
 
-  opt = torch.optim.Adam(params, lr=5e-4)
+  opt = torch.optim.Adam(params, lr=1e-3, weight_decay=0)
   t = trange(args.epochs)
   max_psnr = -1
   best_epoch = -1

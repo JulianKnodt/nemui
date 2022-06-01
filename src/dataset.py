@@ -13,7 +13,7 @@ class MIDIDataset(Dataset):
       if f.lower().endswith(".mid") or f.lower().endswith(".midi")
     ][:]#this limit should be a parameter?
     self.midi_notes = [
-      preproc_midi(pretty_midi.PrettyMIDI(midi))[1000:2000]
+      preproc_midi(pretty_midi.PrettyMIDI(midi))[1000:2500]
       for midi in self.midi_files
     ]
     self.midi_notes = [mn for mn in self.midi_notes if mn.shape[0] > num_samples]
